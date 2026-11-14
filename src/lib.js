@@ -41,3 +41,18 @@ export function sameOrigin(request) {
     return false;
   }
 }
+
+// Constant-time comparison: hashing both sides first gives equal-length inputs,
+// so neither the length nor the content of the passcode leaks through timing.
+export async function passcodeMatches(given, expected) {
+  if (typeof given !== "string" || given === "" || typeof expected !== "string" || expected === "") return false;
+  const encoder = new TextEncoder();
+  const [a, b] = await Promise.all(
+    [given, expected].map((s) => crypto.subtle.digest("SHA-256", encoder.encode(s))),
+  );
+  const x = new Uint8Array(a);
+  const y = new Uint8Array(b);
+  let diff = 0;
+  for (let i = 0; i < x.length; i++) diff |= x[i] ^ y[i];
+  return diff === 0;
+}

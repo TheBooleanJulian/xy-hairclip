@@ -1,12 +1,13 @@
 import { test, beforeEach, afterEach } from "node:test";
 import assert from "node:assert/strict";
 import worker from "../src/index.js";
-import { cleanName, parseId, normaliseSlots, sameOrigin } from "../src/lib.js";
+import { cleanName, parseId, normaliseSlots, sameOrigin, passcodeMatches } from "../src/lib.js";
 
 const HOST = "https://xy-hairclip.thebooleanjulian.dev";
 const env = {
   APPS_SCRIPT_URL: "https://script.google.com/macros/s/test/exec",
   SHEET_TOKEN: "secret-token",
+  ADMIN_PASSCODE: "letmein",
   ASSETS: { fetch: async () => new Response("asset") },
 };
 const ctx = { waitUntil() {} };
@@ -27,11 +28,51 @@ afterEach(() => {
   globalThis.fetch = realFetch;
 });
 
+// Adds the correct passcode unless the test sets its own.
 function claimRequest(body, origin = HOST) {
   const headers = { "Content-Type": "application/json" };
   if (origin) headers.Origin = origin;
-  return new Request(`${HOST}/api/claim`, { method: "POST", headers, body: JSON.stringify(body) });
+  const payload = "passcode" in body ? body : { ...body, passcode: "letmein" };
+  return new Request(`${HOST}/api/claim`, { method: "POST", headers, body: JSON.stringify(payload) });
 }
+
+test("passcodeMatches only accepts the exact passcode", async () => {
+  assert.equal(await passcodeMatches("letmein", "letmein"), true);
+  for (const bad of ["letmei", "letmein ", "LETMEIN", "", null, undefined, 123]) {
+    assert.equal(await passcodeMatches(bad, "letmein"), false, String(bad));
+  }
+  assert.equal(await passcodeMatches("", ""), false);
+  assert.equal(await passcodeMatches("x", undefined), false);
+});
+
+test("wrong or missing passcode is a 401 and never reaches the sheet", async () => {
+  for (const passcode of ["nope", "", null]) {
+    const res = await worker.fetch(claimRequest({ id: 11, name: "Sneaky", passcode }), env, ctx);
+    assert.equal(res.status, 401, String(passcode));
+    assert.equal((await res.json()).code, "unauthorised");
+  }
+  const omitted = new Request(`${HOST}/api/claim`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Origin: HOST },
+    body: JSON.stringify({ id: 11, name: "Sneaky" }),
+  });
+  assert.equal((await worker.fetch(omitted, env, ctx)).status, 401);
+  assert.equal(calls.length, 0);
+});
+
+test("claims are refused when ADMIN_PASSCODE is not set", async () => {
+  const { ADMIN_PASSCODE, ...noPass } = env;
+  const res = await worker.fetch(claimRequest({ id: 11, name: "a" }), noPass, ctx);
+  assert.equal(res.status, 503);
+  assert.equal((await res.json()).code, "auth_not_configured");
+  assert.equal(calls.length, 0);
+});
+
+test("viewing the list needs no passcode", async () => {
+  const { ADMIN_PASSCODE, ...noPass } = env;
+  const res = await worker.fetch(new Request(`${HOST}/api/slots`), noPass, ctx);
+  assert.equal(res.status, 200);
+});
 
 test("parseId accepts 1-39 as numbers or digit strings only", () => {
   assert.equal(parseId(1), 1);
