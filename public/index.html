@@ -109,12 +109,13 @@
   .picked b { font-family: var(--font-mono); color: var(--cyan); }
   label.label { display: block; margin-bottom: 8px; }
   .row { display: flex; gap: 8px; flex-wrap: wrap; }
-  input[type="text"] {
-    flex: 1 1 220px; min-width: 0; height: 44px; padding: 0 12px;
+  #name { margin-bottom: 14px; }
+  input[type="text"], input[type="password"] {
+    width: 100%; flex: 1 1 220px; min-width: 0; height: 44px; padding: 0 12px;
     background: var(--black); color: var(--ink); border: 1px solid rgba(57, 230, 242, 0.45);
     font: 16px var(--font-display);
   }
-  input[type="text"]:focus { outline: none; border-color: var(--cyan-bright); box-shadow: 0 0 0 1px var(--cyan-bright); }
+  input[type="text"]:focus, input[type="password"]:focus { outline: none; border-color: var(--cyan-bright); box-shadow: 0 0 0 1px var(--cyan-bright); }
   button.go {
     height: 44px; padding: 0 20px; border: 0; background: var(--cyan); color: var(--black);
     font: 700 14px var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer;
@@ -141,7 +142,7 @@
   </div>
 
   <h1>Hairclip <span>No.</span></h1>
-  <p class="lede">39 hairclips, each one numbered. Pick an open number and put your name on it. Crossed-out numbers are already claimed.</p>
+  <p class="lede">39 hairclips, each one numbered. Open numbers are still available. Crossed-out numbers are already claimed.</p>
 
   <section class="panel" aria-labelledby="board-label">
     <div class="bar">
@@ -159,12 +160,14 @@
 
   <form class="panel" id="form" novalidate>
     <p class="picked" id="picked">Tap an open number to pick it.</p>
-    <label class="label" for="name">Your name or Instagram handle</label>
+    <label class="label" for="name">Name or Instagram handle</label>
+    <input type="text" id="name" name="name" maxlength="40" autocomplete="off" required>
+    <label class="label" for="passcode">Passcode</label>
     <div class="row">
-      <input type="text" id="name" name="name" maxlength="40" autocomplete="nickname" required>
+      <input type="password" id="passcode" name="passcode" autocomplete="current-password" required>
       <button class="go" type="submit" id="submit" disabled>Claim</button>
     </div>
-    <p class="hint">This name shows next to your number for everyone. One number per claim.</p>
+    <p class="hint">Names are entered by xymiku.39 only. The name shows next to its number for everyone.</p>
     <p class="msg" id="result" aria-live="polite" hidden></p>
   </form>
 
@@ -181,6 +184,7 @@
   var loadError = document.getElementById("load-error");
   var form = document.getElementById("form");
   var nameInput = document.getElementById("name");
+  var passInput = document.getElementById("passcode");
   var submit = document.getElementById("submit");
   var picked = document.getElementById("picked");
   var result = document.getElementById("result");
@@ -269,7 +273,7 @@
       picked.textContent = "Tap an open number to pick it.";
       submit.textContent = "Claim";
     }
-    submit.disabled = busy || !selected || !nameInput.value.trim();
+    submit.disabled = busy || !selected || !nameInput.value.trim() || !passInput.value;
   }
 
   function show(el, text, kind) {
@@ -309,7 +313,8 @@
   form.addEventListener("submit", function (e) {
     e.preventDefault();
     var name = nameInput.value.trim();
-    if (!selected || !name || busy) return;
+    var passcode = passInput.value;
+    if (!selected || !name || !passcode || busy) return;
     busy = true;
     hide(result);
     updateForm();
@@ -317,7 +322,7 @@
     fetch("/api/claim", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id: id, name: name })
+      body: JSON.stringify({ id: id, name: name, passcode: passcode })
     })
       .then(function (res) {
         return res.json().catch(function () { return {}; }).then(function (body) { return { res: res, body: body }; });
@@ -327,9 +332,11 @@
           rememberMine(id);
           slots[id - 1] = { id: id, taken: true, name: r.body.name };
           selected = null;
-          show(result, "Locked in. #" + pad(id) + " is reserved for " + r.body.name + ". Screenshot this for your records.", "ok");
+          nameInput.value = "";
+          show(result, "Saved. #" + pad(id) + " is now reserved for " + r.body.name + ".", "ok");
         } else {
           if (r.body.code === "taken") selected = null;
+          if (r.body.code === "unauthorised") { passInput.value = ""; passInput.focus(); }
           show(result, r.body.error || "Couldn't save your pick. Try again.", "err");
         }
       })
@@ -344,6 +351,7 @@
   });
 
   nameInput.addEventListener("input", updateForm);
+  passInput.addEventListener("input", updateForm);
 
   skeleton();
   load();
