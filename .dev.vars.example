@@ -1,0 +1,3 @@
+# Copy to .dev.vars for `npx wrangler dev`. Production values are Worker secrets.
+APPS_SCRIPT_URL=https://script.google.com/macros/s/REPLACE_ME/exec
+SHEET_TOKEN=replace-with-the-same-value-as-the-script-TOKEN-property

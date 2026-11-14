@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#000000">
+<title>XYMIKU.39 // Hairclip No.</title>
+<meta name="description" content="Limited edition XYMIKU.39 hairclip, 39 pieces. Pick your number.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  /* Palette and type follow xymiku-site (app/globals.css). */
+  :root {
+    --black: #000000;
+    --deep: #050709;
+    --cyan: #39e6f2;
+    --cyan-bright: #00f5ff;
+    --cyan-panel: #06343a;
+    --ink: #eafeff;
+    --mute: #7e8a8d;
+    --signal: #ff3fa4;
+    --line: rgba(57, 230, 242, 0.22);
+    --font-display: "Space Grotesk", system-ui, sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  html { background: var(--black); }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background:
+      linear-gradient(rgba(57, 230, 242, 0.05) 1px, transparent 1px) 0 0 / 32px 32px,
+      linear-gradient(90deg, rgba(57, 230, 242, 0.05) 1px, transparent 1px) 0 0 / 32px 32px,
+      var(--black);
+    color: var(--ink);
+    font-family: var(--font-display);
+    -webkit-font-smoothing: antialiased;
+  }
+  ::selection { background: var(--cyan); color: var(--black); }
+  .mono { font-family: var(--font-mono); }
+
+  .wrap { max-width: 760px; margin: 0 auto; padding: 32px 16px 64px; }
+
+  .topline {
+    display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;
+    font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--mute);
+  }
+  .topline .brand { color: var(--cyan); }
+  .live { display: inline-flex; align-items: center; gap: 8px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--signal); box-shadow: 0 0 10px var(--signal); }
+  @media (prefers-reduced-motion: no-preference) {
+    .dot { animation: pulse 2s ease-in-out infinite; }
+    @keyframes pulse { 50% { opacity: 0.35; } }
+  }
+
+  h1 {
+    margin: 28px 0 8px; font-size: clamp(32px, 8vw, 52px); line-height: 1.05; font-weight: 700; letter-spacing: -0.01em;
+    text-shadow: 0 0 16px rgba(57, 230, 242, 0.35);
+  }
+  h1 span { color: var(--cyan); }
+  .lede { margin: 0 0 28px; color: var(--mute); font-size: 17px; line-height: 1.5; max-width: 52ch; }
+
+  .panel {
+    position: relative; border: 1px solid var(--line); background: rgba(5, 7, 9, 0.88);
+    padding: 20px; box-shadow: 0 0 24px rgba(57, 230, 242, 0.08);
+  }
+  .panel::before, .panel::after {
+    content: ""; position: absolute; width: 10px; height: 10px; pointer-events: none; opacity: 0.7;
+  }
+  .panel::before { top: -1px; left: -1px; border-top: 2px solid var(--cyan); border-left: 2px solid var(--cyan); }
+  .panel::after { bottom: -1px; right: -1px; border-bottom: 2px solid var(--cyan); border-right: 2px solid var(--cyan); }
+
+  .bar { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+  .label { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--mute); }
+  .count { font-family: var(--font-mono); font-size: 14px; color: var(--ink); }
+  .count b { color: var(--cyan); font-weight: 700; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(64px, 1fr)); gap: 8px; }
+  .slot {
+    appearance: none; margin: 0; min-height: 68px; padding: 8px 4px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+    background: var(--deep); color: var(--ink); border: 1px solid rgba(57, 230, 242, 0.45);
+    font: inherit; cursor: pointer; transition: border-color 120ms, box-shadow 120ms, background 120ms;
+  }
+  .slot .num { font-family: var(--font-mono); font-size: 22px; font-weight: 700; line-height: 1; }
+  .slot .who {
+    max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    font-size: 11px; line-height: 1.2; color: var(--mute);
+  }
+  .slot:hover:not(:disabled) { border-color: var(--cyan-bright); box-shadow: 0 0 14px rgba(57, 230, 242, 0.35); }
+  .slot:focus-visible { outline: 2px solid var(--cyan-bright); outline-offset: 2px; }
+  .slot[aria-pressed="true"] { background: var(--cyan); border-color: var(--cyan); color: var(--black); box-shadow: 0 0 18px rgba(57, 230, 242, 0.5); }
+  .slot:disabled { cursor: not-allowed; background: transparent; border: 1px dashed rgba(126, 138, 141, 0.45); color: var(--mute); }
+  .slot:disabled .num { text-decoration: line-through; text-decoration-thickness: 2px; font-weight: 500; }
+  .slot.mine:disabled { border-style: solid; border-color: var(--signal); }
+  .slot.mine .who { color: var(--signal); }
+  .slot.skeleton { cursor: default; border-color: rgba(57, 230, 242, 0.12); color: rgba(126, 138, 141, 0.5); }
+
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 14px; font-size: 13px; color: var(--mute); }
+  .legend i { display: inline-block; width: 12px; height: 12px; margin-right: 6px; vertical-align: -1px; }
+  .legend .open { border: 1px solid var(--cyan); }
+  .legend .sel { background: var(--cyan); }
+  .legend .gone { border: 1px dashed var(--mute); }
+
+  form.panel { margin-top: 16px; }
+  .picked { margin: 0 0 14px; font-size: 18px; }
+  .picked b { font-family: var(--font-mono); color: var(--cyan); }
+  label.label { display: block; margin-bottom: 8px; }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; }
+  input[type="text"] {
+    flex: 1 1 220px; min-width: 0; height: 44px; padding: 0 12px;
+    background: var(--black); color: var(--ink); border: 1px solid rgba(57, 230, 242, 0.45);
+    font: 16px var(--font-display);
+  }
+  input[type="text"]:focus { outline: none; border-color: var(--cyan-bright); box-shadow: 0 0 0 1px var(--cyan-bright); }
+  button.go {
+    height: 44px; padding: 0 20px; border: 0; background: var(--cyan); color: var(--black);
+    font: 700 14px var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer;
+  }
+  button.go:hover:not(:disabled) { background: var(--cyan-bright); }
+  button.go:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+  button.go:disabled { background: var(--cyan-panel); color: var(--mute); cursor: not-allowed; }
+  .hint { margin: 10px 0 0; font-size: 13px; color: var(--mute); }
+
+  .msg { margin: 14px 0 0; padding: 12px 14px; font-size: 15px; line-height: 1.45; border-left: 3px solid var(--mute); background: rgba(126, 138, 141, 0.08); }
+  .msg[hidden] { display: none; }
+  .msg.ok { border-color: var(--cyan); background: rgba(57, 230, 242, 0.08); }
+  .msg.err { border-color: var(--signal); background: rgba(255, 63, 164, 0.08); }
+  .msg button { margin-left: 8px; background: none; border: 0; color: var(--cyan); font: inherit; text-decoration: underline; cursor: pointer; padding: 0; }
+
+  footer { margin-top: 32px; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--mute); }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div class="topline">
+    <span class="brand">XYMIKU.39 // Limited run</span>
+    <span class="live"><span class="dot" aria-hidden="true"></span><span id="sync">Syncing</span></span>
+  </div>
+
+  <h1>Hairclip <span>No.</span></h1>
+  <p class="lede">39 hairclips, each one numbered. Pick an open number and put your name on it. Crossed-out numbers are already claimed.</p>
+
+  <section class="panel" aria-labelledby="board-label">
+    <div class="bar">
+      <span class="label" id="board-label">Numbers 01–39</span>
+      <span class="count" id="count" aria-live="polite"></span>
+    </div>
+    <div class="grid" id="grid" role="group" aria-labelledby="board-label"></div>
+    <div class="legend" aria-hidden="true">
+      <span><i class="open"></i>Open</span>
+      <span><i class="sel"></i>Selected</span>
+      <span><i class="gone"></i>Claimed</span>
+    </div>
+    <p class="msg err" id="load-error" role="alert" hidden></p>
+  </section>
+
+  <form class="panel" id="form" novalidate>
+    <p class="picked" id="picked">Tap an open number to pick it.</p>
+    <label class="label" for="name">Your name or Instagram handle</label>
+    <div class="row">
+      <input type="text" id="name" name="name" maxlength="40" autocomplete="nickname" required>
+      <button class="go" type="submit" id="submit" disabled>Claim</button>
+    </div>
+    <p class="hint">This name shows next to your number for everyone. One number per claim.</p>
+    <p class="msg" id="result" aria-live="polite" hidden></p>
+  </form>
+
+  <footer>Synced live with the official list</footer>
+</main>
+
+<script>
+(function () {
+  var TOTAL = 39;
+  var REFRESH_MS = 30000;
+  var grid = document.getElementById("grid");
+  var countEl = document.getElementById("count");
+  var syncEl = document.getElementById("sync");
+  var loadError = document.getElementById("load-error");
+  var form = document.getElementById("form");
+  var nameInput = document.getElementById("name");
+  var submit = document.getElementById("submit");
+  var picked = document.getElementById("picked");
+  var result = document.getElementById("result");
+
+  var slots = [];
+  var selected = null;
+  var busy = false;
+  var mine = loadMine();
+
+  function pad(n) { return String(n).padStart(2, "0"); }
+
+  function loadMine() {
+    try { return JSON.parse(localStorage.getItem("xy-hairclip:mine") || "[]"); } catch (e) { return []; }
+  }
+  function rememberMine(id) {
+    if (mine.indexOf(id) === -1) mine.push(id);
+    try { localStorage.setItem("xy-hairclip:mine", JSON.stringify(mine)); } catch (e) {}
+  }
+
+  function skeleton() {
+    grid.innerHTML = "";
+    for (var i = 1; i <= TOTAL; i++) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "slot skeleton";
+      b.disabled = true;
+      b.tabIndex = -1;
+      b.innerHTML = '<span class="num">' + pad(i) + "</span>";
+      grid.appendChild(b);
+    }
+  }
+
+  function render() {
+    var focusedId = document.activeElement && document.activeElement.dataset ? document.activeElement.dataset.id : null;
+    grid.innerHTML = "";
+    var open = 0;
+    slots.forEach(function (s) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "slot" + (mine.indexOf(s.id) !== -1 ? " mine" : "");
+      b.dataset.id = s.id;
+      var num = document.createElement("span");
+      num.className = "num";
+      num.textContent = pad(s.id);
+      b.appendChild(num);
+      if (s.taken) {
+        b.disabled = true;
+        var who = document.createElement("span");
+        who.className = "who";
+        who.textContent = s.name;
+        b.appendChild(who);
+        b.title = "#" + pad(s.id) + " · " + s.name;
+        b.setAttribute("aria-label", "Number " + s.id + ", claimed by " + s.name);
+      } else {
+        open++;
+        b.setAttribute("aria-pressed", String(selected === s.id));
+        b.setAttribute("aria-label", "Number " + s.id + ", open");
+        b.addEventListener("click", function () { select(s.id); });
+      }
+      grid.appendChild(b);
+    });
+    countEl.innerHTML = "<b>" + open + "</b> of " + TOTAL + " open";
+    if (focusedId) {
+      var again = grid.querySelector('[data-id="' + focusedId + '"]');
+      if (again && !again.disabled) again.focus();
+    }
+    updateForm();
+  }
+
+  function select(id) {
+    selected = selected === id ? null : id;
+    hide(result);
+    render();
+    if (selected) nameInput.focus({ preventScroll: true });
+  }
+
+  function updateForm() {
+    if (selected) {
+      picked.innerHTML = "";
+      picked.appendChild(document.createTextNode("Claiming "));
+      var b = document.createElement("b");
+      b.textContent = "#" + pad(selected);
+      picked.appendChild(b);
+      submit.textContent = busy ? "Saving…" : "Claim #" + pad(selected);
+    } else {
+      picked.textContent = "Tap an open number to pick it.";
+      submit.textContent = "Claim";
+    }
+    submit.disabled = busy || !selected || !nameInput.value.trim();
+  }
+
+  function show(el, text, kind) {
+    el.className = "msg" + (kind ? " " + kind : "");
+    el.textContent = text;
+    el.hidden = false;
+  }
+  function hide(el) { el.hidden = true; }
+
+  function load() {
+    return fetch("/api/slots", { cache: "no-store" })
+      .then(function (res) {
+        return res.json().catch(function () { return {}; }).then(function (body) {
+          if (!res.ok) throw new Error(body.error || "Couldn't load the list.");
+          return body;
+        });
+      })
+      .then(function (body) {
+        slots = body.slots;
+        if (selected && slots[selected - 1] && slots[selected - 1].taken) selected = null;
+        hide(loadError);
+        syncEl.textContent = "Live · " + new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+        render();
+      })
+      .catch(function (err) {
+        syncEl.textContent = "Offline";
+        loadError.textContent = err.message + " ";
+        var retry = document.createElement("button");
+        retry.type = "button";
+        retry.textContent = "Retry";
+        retry.addEventListener("click", load);
+        loadError.appendChild(retry);
+        loadError.hidden = false;
+      });
+  }
+
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var name = nameInput.value.trim();
+    if (!selected || !name || busy) return;
+    busy = true;
+    hide(result);
+    updateForm();
+    var id = selected;
+    fetch("/api/claim", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: id, name: name })
+    })
+      .then(function (res) {
+        return res.json().catch(function () { return {}; }).then(function (body) { return { res: res, body: body }; });
+      })
+      .then(function (r) {
+        if (r.res.ok && r.body.ok) {
+          rememberMine(id);
+          slots[id - 1] = { id: id, taken: true, name: r.body.name };
+          selected = null;
+          show(result, "Locked in. #" + pad(id) + " is reserved for " + r.body.name + ". Screenshot this for your records.", "ok");
+        } else {
+          if (r.body.code === "taken") selected = null;
+          show(result, r.body.error || "Couldn't save your pick. Try again.", "err");
+        }
+      })
+      .catch(function () {
+        show(result, "Network error. Check your connection and try again.", "err");
+      })
+      .then(function () {
+        busy = false;
+        render();
+        return load();
+      });
+  });
+
+  nameInput.addEventListener("input", updateForm);
+
+  skeleton();
+  load();
+  setInterval(function () { if (!document.hidden && !busy) load(); }, REFRESH_MS);
+  document.addEventListener("visibilitychange", function () { if (!document.hidden && !busy) load(); });
+})();
+</script>
+</body>
+</html>
