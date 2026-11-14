@@ -6,10 +6,13 @@
 // check-and-write. The Apps Script URL and the shared token are Worker secrets,
 // so neither ever reaches the browser.
 //
+// Writing a name needs the ADMIN_PASSCODE secret (sent by the claim form).
+// Without that secret set, claims are refused; viewing the list stays public.
+//
 // Only the default export lives here: workerd treats any named export of the
 // main module as an entrypoint, so pure helpers live in lib.js.
 
-import { TOTAL, NAME_MAX, normaliseSlots, parseId, cleanName, sameOrigin } from "./lib.js";
+import { TOTAL, NAME_MAX, normaliseSlots, parseId, cleanName, sameOrigin, passcodeMatches } from "./lib.js";
 
 const LIST_CACHE_SECONDS = 10;
 const LIST_CACHE_KEY = "https://cache.xy-hairclip.internal/api/slots";
@@ -49,7 +52,11 @@ async function getSlots(env, ctx) {
 async function claim(request, env, ctx) {
   if (!sameOrigin(request)) return json({ error: "Bad origin." }, 403);
   if (!configured(env)) return notConfigured();
+  if (!env.ADMIN_PASSCODE) {
+    return json({ error: "Claims are closed right now.", code: "auth_not_configured" }, 503);
+  }
 
+  // Before the passcode check, so it also caps passcode guessing per IP.
   if (env.RL_CLAIM) {
     const ip = request.headers.get("CF-Connecting-IP") || "unknown";
     const { success } = await env.RL_CLAIM.limit({ key: ip });
@@ -61,6 +68,9 @@ async function claim(request, env, ctx) {
     input = await request.json();
   } catch {
     return json({ error: "Bad request." }, 400);
+  }
+  if (!(await passcodeMatches(input?.passcode, env.ADMIN_PASSCODE))) {
+    return json({ error: "Wrong passcode.", code: "unauthorised" }, 401);
   }
   const id = parseId(input?.id);
   const name = cleanName(input?.name);

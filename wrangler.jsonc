@@ -23,7 +23,11 @@
   // Secrets (set with `npx wrangler secret put NAME`, never committed):
   //   APPS_SCRIPT_URL  web app URL of apps-script/Code.gs (ends in /exec)
   //   SHEET_TOKEN      shared token, same value as the script's TOKEN property
-  // Until both are set, /api/* answers 503 "Number picking opens soon."
+  //   ADMIN_PASSCODE   passcode the claim form must send to write a name
+  // Until the first two are set, /api/* answers 503 "Number picking opens soon."
+  // Without ADMIN_PASSCODE, claims answer 503 "Claims are closed right now."
+  // Set these as secrets (dashboard type "Secret"): plain-text dashboard vars are
+  // wiped by the next `wrangler deploy`.
 
   "observability": { "enabled": true },
 
