@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import worker from "../src/index.js";
 import { cleanName, parseId, normaliseSlots, sameOrigin } from "../src/lib.js";
 
-const HOST = "https://xy-hairclip.xymiku39.com";
+const HOST = "https://xy-hairclip.thebooleanjulian.dev";
 const env = {
   APPS_SCRIPT_URL: "https://script.google.com/macros/s/test/exec",
   SHEET_TOKEN: "secret-token",

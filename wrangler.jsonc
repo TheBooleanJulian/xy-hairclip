@@ -1,7 +1,9 @@
 {
   // xy-hairclip: number picker for the limited edition XYMIKU.39 hairclip.
   "name": "xy-hairclip",
-  "account_id": "d330520210c29106bb9759d3a768d1c7", // xymiku39 account (owns xymiku39.com)
+  // accurova account (owns thebooleanjulian.dev). Moved off the xymiku39 account on
+  // 2026-11-14: a zone rule on xymiku39.com served Notion for xy-hairclip.xymiku39.com.
+  "account_id": "c580c4403524273d1bece674117472dd",
   "main": "src/index.js",
   "compatibility_date": "2026-10-01",
   "workers_dev": true,
@@ -26,5 +28,6 @@
   "observability": { "enabled": true },
 
   // Production domain. The Cache API (10 s list cache) only works on custom domains.
-  "routes": [{ "pattern": "xy-hairclip.xymiku39.com", "custom_domain": true }]
+  // Overrides the *.thebooleanjulian.dev wildcard A record to Zeabur for this host.
+  "routes": [{ "pattern": "xy-hairclip.thebooleanjulian.dev", "custom_domain": true }]
 }
