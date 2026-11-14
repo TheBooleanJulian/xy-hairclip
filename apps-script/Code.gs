@@ -1,7 +1,7 @@
 /**
  * xy-hairclip: Apps Script web app bound to the hairclip Google Sheet.
  *
- * The Worker at xy-hairclip.xymiku39.com is the only intended caller. Every
+ * The Worker at xy-hairclip.thebooleanjulian.dev is the only intended caller. Every
  * request carries the shared TOKEN (Script Properties), so knowing the web app
  * URL alone is not enough to read or write.
  *

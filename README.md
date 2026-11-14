@@ -1,7 +1,7 @@
 # xy-hairclip
 
 Number picker for the limited edition XYMIKU.39 hairclip (39 pieces). Fans open
-<https://xy-hairclip.xymiku39.com>, see which numbers are taken (greyed and crossed
+<https://xy-hairclip.thebooleanjulian.dev>, see which numbers are taken (greyed and crossed
 out, with the owner's name), pick an open one and put their name on it. The pick is
 written straight into the
 [hairclip Google Sheet](https://docs.google.com/spreadsheets/d/1rt2I3dokmsPwD_i4MYnfD0r5ehBLeu7kG-bHOJQqFas/edit).
@@ -55,11 +55,11 @@ version*. That keeps the same URL. A *New deployment* gets a new URL, and then
 ```sh
 npm test                    # node --test, no install needed
 cp .dev.vars.example .dev.vars && npx wrangler dev
-npx wrangler deploy         # xymiku39 Cloudflare account
+npx wrangler deploy         # accurova Cloudflare account
 ```
 
-Deploys go to the Worker `xy-hairclip` on the xymiku39 account, with the custom
-domain `xy-hairclip.xymiku39.com`. Deploy-on-push (Workers Builds) is not connected
+Deploys go to the Worker `xy-hairclip` on the accurova account, with the custom
+domain `xy-hairclip.thebooleanjulian.dev`. Deploy-on-push (Workers Builds) is not connected
 yet. To set it up, connect this repo in the Cloudflare dashboard with production
 branch `main`.
 
